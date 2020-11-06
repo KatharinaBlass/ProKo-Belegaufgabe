@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -5,59 +6,51 @@
 #include <opencv2/highgui.hpp>
 #include <mpi.h>
 #include <omp.h>
+#include "RgbToHsv.hpp"
+#include "EmbossFilter.hpp"
 
 using namespace cv;
+using namespace std;
 
 int main(int argc, char** argv )
 {
-    /* C++ example
-    std::cout << "hello world!";
-    */
-
-    /* openCV example
+    // openCV example
     if ( argc != 2 )
     {
         printf("usage: DisplayImage.out <Image_Path>\n");
         return -1;
     }
 
-    Mat image;
-    image = imread( argv[1], 1 );
+    cv::Mat image = cv::imread( argv[1], cv::IMREAD_UNCHANGED );
 
     if ( !image.data )
     {
         printf("No image data \n");
         return -1;
     }
-    namedWindow("Display Image", WINDOW_AUTOSIZE );
-    imshow("Display Image", image);
+
+    Mat hsv_image;
+    Mat emboss_image;
+
+    RgbToHsv( image, hsv_image );
+    applyEmbossFilter(hsv_image, emboss_image, true);
+
+    // openCv solution
+    Mat outputImage = cv::Mat::zeros( image.size(), image.type() );
+    float emboss2_data[9] = { -1, -1, -1, -1, 9, -1, -1, -1, -1 };
+    float emboss_data[9] = { 2, -0, 0, 0, -1, 0, 0, 0, -1 };
+    cv::Mat embossKernel = cv::Mat(3, 3, CV_32F, emboss_data);
+
+    cv::filter2D(hsv_image, outputImage, -1, embossKernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
+
+    // display and wait for a key-press, then close the window
+    cv::imshow( "RGB image", image );
+    cv::imshow( "HSV image", hsv_image );
+    cv::imshow( "Emboss image", emboss_image);
+    cv::imshow( "OpenCV emboss image", outputImage);
 
     waitKey(0);
-    */
-
-    /* openMP example
-    #pragma omp parallel for
-    for (int i=0; i<4; i++) {
-        printf("hello aus dem theead %d von %d\n", omp_get_thread_num(), omp_get_num_threads());
-    }
-    */
-
-    // MPI example
-    MPI_Init(&argc,&argv);
-    //parallel code
-
-    int size;
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    int rank;
-    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
-
-    char name[128]; int name_len;
-    MPI_Get_processor_name( name, &name_len );
-
-    printf("hello from < %d > of < %d > in %d\n",rank, size, name);
-
-    MPI_Finalize();
+    destroyAllWindows();
 
     return 0;
 }
