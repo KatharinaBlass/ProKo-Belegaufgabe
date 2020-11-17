@@ -9,6 +9,7 @@
 #include <omp.h>
 #include "RgbToHsv.hpp"
 #include "EmbossFilter.hpp"
+#include "RgbToGrayscale.hpp"
 
 using namespace cv;
 using namespace std;
@@ -32,10 +33,12 @@ int main(int argc, char** argv )
 
     Mat hsv_image;
     Mat emboss_image;
+    Mat gray_image = cv::Mat( image.size(), CV_8UC1 );
 
     // own solutions
     RgbToHsv( image, hsv_image );
     applyEmbossFilter(hsv_image, emboss_image, true);
+    RgbToGrayscale( image, gray_image );
 
     // openCV solution for hsv
     Mat cv_hsv_image;
@@ -58,6 +61,7 @@ int main(int argc, char** argv )
     cv::imshow( "OpenCV hsv image", cv_hsv_image);
     cv::imshow( "Emboss image", emboss_image);
     cv::imshow( "OpenCV emboss image", cv_emboss_image);
+    cv::imshow( "Grayscale image", gray_image);
     cv::imshow( "OpenCV grayscale image", cv_grayscale_image);
 
     waitKey(0);
