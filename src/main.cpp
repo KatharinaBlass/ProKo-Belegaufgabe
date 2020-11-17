@@ -4,6 +4,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/imgproc/types_c.h>
 #include <mpi.h>
 #include <omp.h>
 #include "RgbToHsv.hpp"
@@ -32,22 +33,32 @@ int main(int argc, char** argv )
     Mat hsv_image;
     Mat emboss_image;
 
+    // own solutions
     RgbToHsv( image, hsv_image );
     applyEmbossFilter(hsv_image, emboss_image, true);
 
-    // openCv solution
-    Mat outputImage = cv::Mat::zeros( image.size(), image.type() );
+    // openCV solution for hsv
+    Mat cv_hsv_image;
+    cvtColor(image, cv_hsv_image, COLOR_RGB2HSV);
+
+    // openCV solution for emboss filter
+    Mat cv_emboss_image = cv::Mat::zeros( image.size(), image.type() );
     float emboss2_data[9] = { -1, -1, -1, -1, 9, -1, -1, -1, -1 };
     float emboss_data[9] = { 2, -0, 0, 0, -1, 0, 0, 0, -1 };
     cv::Mat embossKernel = cv::Mat(3, 3, CV_32F, emboss_data);
+    cv::filter2D(hsv_image, cv_emboss_image, -1, embossKernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
 
-    cv::filter2D(hsv_image, outputImage, -1, embossKernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
+    // openCV solution for grayscale
+    Mat cv_grayscale_image;
+    cvtColor(image, cv_grayscale_image, CV_RGB2GRAY);
 
-    // display and wait for a key-press, then close the window
+    // display images and wait for a key-press, then close the window
     cv::imshow( "RGB image", image );
     cv::imshow( "HSV image", hsv_image );
+    cv::imshow( "OpenCV hsv image", cv_hsv_image);
     cv::imshow( "Emboss image", emboss_image);
-    cv::imshow( "OpenCV emboss image", outputImage);
+    cv::imshow( "OpenCV emboss image", cv_emboss_image);
+    cv::imshow( "OpenCV grayscale image", cv_grayscale_image);
 
     waitKey(0);
     destroyAllWindows();
