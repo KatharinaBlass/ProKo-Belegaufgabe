@@ -23,7 +23,7 @@ int main(int argc, char** argv )
         return -1;
     }
 
-    cv::Mat image = cv::imread( argv[1], cv::IMREAD_UNCHANGED );
+    cv::Mat image = cv::imread( argv[1], cv::IMREAD_COLOR );
 
     if ( !image.data )
     {
@@ -33,7 +33,7 @@ int main(int argc, char** argv )
 
     Mat hsv_image;
     Mat emboss_image;
-    Mat gray_image = cv::Mat( image.size(), CV_8UC1 );
+    Mat gray_image;
 
     // own solutions
     RgbToHsv( image, hsv_image );
