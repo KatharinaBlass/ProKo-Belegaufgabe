@@ -36,9 +36,9 @@ int main(int argc, char** argv )
     Mat gray_image;
 
     // own solutions
-    RgbToHsv( image, hsv_image );
-    applyEmbossFilter(hsv_image, emboss_image, true);
-    RgbToGrayscale( image, gray_image );
+    RgbToHsvSlowPixelAccess( image, hsv_image );
+    applyEmbossFilterSlowPixelAccess(hsv_image, emboss_image);
+    RgbToGrayscaleSlowPixelAccess( image, gray_image );
 
     // openCV solution for hsv
     Mat cv_hsv_image;

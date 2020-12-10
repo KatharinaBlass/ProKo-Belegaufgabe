@@ -1,11 +1,9 @@
-#include <stdio.h>
-#include <opencv2/opencv.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
+#include "opencv2/opencv.hpp"
 #include "RgbToGrayscale.hpp"
 
-void RgbToGrayscale(const cv::Mat &inputImage, cv::Mat &outputImage)
+using namespace cv;
+
+void RgbToGrayscaleSlowPixelAccess(const Mat &inputImage, Mat &outputImage)
 {
   // check that the input image has at least three channels:
   if (inputImage.channels() < 3)
@@ -20,9 +18,9 @@ void RgbToGrayscale(const cv::Mat &inputImage, cv::Mat &outputImage)
   }
 
   // prepare an output image of same size with 1 channel
-  outputImage = cv::Mat::zeros(inputImage.size(), CV_8UC1);
+  outputImage = Mat::zeros(inputImage.size(), CV_8UC1);
 
-  cv::Vec3b bgr_pixel;
+  Vec3b bgr_pixel;
   int Gray;
 
   for (int i = 0; i < inputImage.rows; i++)
@@ -30,7 +28,7 @@ void RgbToGrayscale(const cv::Mat &inputImage, cv::Mat &outputImage)
     for (int j = 0; j < inputImage.cols; j++)
     {
       // get BGR pixel:
-      bgr_pixel = inputImage.at<cv::Vec3b>(i, j);
+      bgr_pixel = inputImage.at<Vec3b>(i, j);
 
       // get R, G and B values:
       double R = static_cast<double>(bgr_pixel[2]);
