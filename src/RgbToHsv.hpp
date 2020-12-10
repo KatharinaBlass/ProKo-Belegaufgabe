@@ -1,3 +1,6 @@
 #include <opencv2/opencv.hpp>
 
-void RgbToHsvSlowPixelAccess( const cv::Mat& inputImage, cv::Mat& outputImage );
+using namespace cv;
+
+void RgbToHsvSlowPixelAccess(const Mat &inputImage, Mat &outputImage);
+void RgbToHsvEfficientPixelAccess(Mat &inputImage, Mat &outputImage);

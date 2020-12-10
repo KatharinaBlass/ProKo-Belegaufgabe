@@ -1,3 +1,6 @@
 #include <opencv2/opencv.hpp>
 
-void applyEmbossFilterSlowPixelAccess( const cv::Mat& inputImage, cv::Mat& outputImage );
+using namespace cv;
+
+void applyEmbossFilterSlowPixelAccess(const Mat &inputImage, Mat &outputImage);
+void applyEmbossFilterEfficientPixelAccess(Mat &inputImage, Mat &outputImage);

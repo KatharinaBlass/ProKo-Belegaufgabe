@@ -23,7 +23,7 @@ int main(int argc, char** argv )
         return -1;
     }
 
-    cv::Mat image = cv::imread( argv[1], cv::IMREAD_COLOR );
+    Mat image = imread( argv[1], IMREAD_COLOR );
 
     if ( !image.data )
     {
@@ -36,33 +36,33 @@ int main(int argc, char** argv )
     Mat gray_image;
 
     // own solutions
-    RgbToHsvSlowPixelAccess( image, hsv_image );
-    applyEmbossFilterSlowPixelAccess(hsv_image, emboss_image);
-    RgbToGrayscaleSlowPixelAccess( image, gray_image );
+    RgbToHsvEfficientPixelAccess( image, hsv_image );
+    applyEmbossFilterEfficientPixelAccess(hsv_image, emboss_image);
+    RgbToGrayscaleEfficientPixelAccess( image, gray_image );
 
     // openCV solution for hsv
     Mat cv_hsv_image;
     cvtColor(image, cv_hsv_image, COLOR_RGB2HSV);
 
     // openCV solution for emboss filter
-    Mat cv_emboss_image = cv::Mat::zeros( image.size(), image.type() );
+    Mat cv_emboss_image = Mat::zeros( image.size(), image.type() );
     float emboss2_data[9] = { -1, -1, -1, -1, 9, -1, -1, -1, -1 };
     float emboss_data[9] = { 2, -0, 0, 0, -1, 0, 0, 0, -1 };
-    cv::Mat embossKernel = cv::Mat(3, 3, CV_32F, emboss_data);
-    cv::filter2D(hsv_image, cv_emboss_image, -1, embossKernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
+    Mat embossKernel = Mat(3, 3, CV_32F, emboss_data);
+    filter2D(hsv_image, cv_emboss_image, -1, embossKernel, Point(-1, -1), 0, BORDER_DEFAULT);
 
     // openCV solution for grayscale
     Mat cv_grayscale_image;
     cvtColor(image, cv_grayscale_image, CV_RGB2GRAY);
 
     // display images and wait for a key-press, then close the window
-    cv::imshow( "RGB image", image );
-    cv::imshow( "HSV image", hsv_image );
-    cv::imshow( "OpenCV hsv image", cv_hsv_image);
-    cv::imshow( "Emboss image", emboss_image);
-    cv::imshow( "OpenCV emboss image", cv_emboss_image);
-    cv::imshow( "Grayscale image", gray_image);
-    cv::imshow( "OpenCV grayscale image", cv_grayscale_image);
+    imshow( "RGB image", image );
+    imshow( "HSV image", hsv_image );
+    imshow( "OpenCV hsv image", cv_hsv_image);
+    imshow( "Emboss image", emboss_image);
+    imshow( "OpenCV emboss image", cv_emboss_image);
+    imshow( "Grayscale image", gray_image);
+    imshow( "OpenCV grayscale image", cv_grayscale_image);
 
     waitKey(0);
     destroyAllWindows();
