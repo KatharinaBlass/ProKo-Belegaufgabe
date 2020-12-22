@@ -4,3 +4,4 @@ using namespace cv;
 
 void RgbToGrayscaleSlowPixelAccess(const Mat &inputImage, Mat &outputImage);
 void RgbToGrayscaleEfficientPixelAccess(Mat &inputImage, Mat &outputImage);
+void RgbToGrayscaleParallel(Mat &inputImage, Mat &outputImage);

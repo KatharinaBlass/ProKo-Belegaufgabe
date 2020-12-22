@@ -1,5 +1,6 @@
 #include "opencv2/opencv.hpp"
 #include "EmbossFilter.hpp"
+#include <omp.h>
 
 using namespace cv;
 
@@ -92,6 +93,32 @@ void applyEmbossFilterSlowPixelAccess(const Mat &inputImage, Mat &outputImage)
       for (int k = 0; k < inputImage.channels(); k++)
       {
         outputImage.at<Vec3b>(i, j)[k] = convolutePixel(inputImage, embossKernel, i, j, k);
+      }
+    }
+  }
+}
+
+void applyParallelEmbossFilter(Mat &inputImage, Mat &outputImage)
+{
+  // create a kernel
+  float emboss_data[9] = {2, -0, 0, 0, -1, 0, 0, 0, -1};
+  Mat embossKernel = Mat(3, 3, CV_32F, emboss_data);
+
+  // initialize the empty output image:
+  outputImage = Mat::zeros(inputImage.size(), inputImage.type());
+
+  // go over the image:
+  #pragma omp parallel for 
+  for (int i = 1; i < inputImage.rows - 1; i++)
+  {
+    // We obtain a pointer to the beginning of row i of inputImage and another one for outputImage
+    Vec3b *outputImagePointer = outputImage.ptr<Vec3b>(i);
+
+    for (int j = 1; j < inputImage.cols - 1; j++)
+    {
+      for (int k = 0; k < inputImage.channels(); k++)
+      {
+        outputImagePointer[j][k] = convolutePixelEfficient(inputImage, embossKernel, i, j, k);
       }
     }
   }

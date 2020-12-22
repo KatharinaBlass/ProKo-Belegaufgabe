@@ -4,3 +4,4 @@ using namespace cv;
 
 void RgbToHsvSlowPixelAccess(const Mat &inputImage, Mat &outputImage);
 void RgbToHsvEfficientPixelAccess(Mat &inputImage, Mat &outputImage);
+void RgbToHsvParallel(Mat &inputImage, Mat &outputImage);

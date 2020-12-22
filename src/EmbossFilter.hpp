@@ -4,3 +4,4 @@ using namespace cv;
 
 void applyEmbossFilterSlowPixelAccess(const Mat &inputImage, Mat &outputImage);
 void applyEmbossFilterEfficientPixelAccess(Mat &inputImage, Mat &outputImage);
+void applyParallelEmbossFilter(Mat &inputImage, Mat &outputImage);
