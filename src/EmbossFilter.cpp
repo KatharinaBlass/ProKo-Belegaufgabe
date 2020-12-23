@@ -29,8 +29,7 @@ void applyEmbossFilterEfficientPixelAccess(Mat &inputImage, Mat &outputImage)
   Mat embossKernel = Mat(3, 3, CV_32F, emboss_data);
 
   // initialize the empty output image:
-  //outputImage = Mat::zeros(inputImage.size(), inputImage.type());
-  outputImage = inputImage;
+  outputImage = Mat::zeros(inputImage.size(), inputImage.type());
 
   // go over the image:
   for (int i = 1; i < inputImage.rows - 1; i++)
@@ -85,8 +84,6 @@ void applyEmbossFilterSlowPixelAccess(const Mat &inputImage, Mat &outputImage)
 
   // initialize the empty output image:
   outputImage = Mat::zeros(inputImage.size(), inputImage.type());
-  //outputImage = inputImage;
-  //inputImage.copyTo(outputImage);
 
   // go over the image:
   for (int i = 1; i < inputImage.rows - 1; i++)
@@ -111,7 +108,7 @@ void applyParallelEmbossFilter(Mat &inputImage, Mat &outputImage)
   outputImage = Mat::zeros(inputImage.size(), inputImage.type());
 
   // go over the image:
-  #pragma omp parallel for 
+  #pragma omp parallel for
   for (int i = 1; i < inputImage.rows - 1; i++)
   {
     // We obtain a pointer to the beginning of row i of inputImage and another one for outputImage

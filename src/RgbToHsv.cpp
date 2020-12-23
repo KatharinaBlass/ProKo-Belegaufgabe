@@ -77,12 +77,8 @@ void RgbToHsvSlowPixelAccess(const Mat &inputImage, Mat &outputImage)
     throw("Image doesn't have enough channels!");
   }
 
-
-
   // prepare an output 8-bit image of same size with three channels (for H, S and V)
-  // outputImage = Mat::zeros(inputImage.size(), CV_8UC3);
-
-  outputImage = inputImage;
+  outputImage = Mat::zeros(inputImage.size(), CV_8UC3);
 
   Vec3b bgr_pixel;
   Vec3b hsv_pixel;

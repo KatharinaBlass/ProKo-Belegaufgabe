@@ -23,8 +23,6 @@ void RgbToGrayscaleEfficientPixelAccess(Mat &inputImage, Mat &outputImage)
 
   int grayPixelValue;
 
-  printf(" until here everything fine");
-
   for (int i = 0; i < inputImage.rows; i++)
   {
     // We obtain a pointer to the beginning of row i of inputImage and another one for outputImage
@@ -63,7 +61,6 @@ void RgbToGrayscaleSlowPixelAccess(const Mat &inputImage, Mat &outputImage)
 
   // prepare an output image of same size with 1 channel
   outputImage = Mat::zeros(inputImage.size(), CV_8UC1);
-  //outputImage = inputImage;
 
   Vec3b bgr_pixel;
   int grayPixelValue;
