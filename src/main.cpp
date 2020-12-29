@@ -49,73 +49,75 @@ int main(int argc, char **argv)
         full_image_hsv_emboss = cv::Mat::zeros(full_image_original.rows, full_image_original.cols, full_image_original.type());
     }
 
-    double t0 = omp_get_wtime(); // start time
-
     // wait for it to finish:
     MPI_Barrier(MPI_COMM_WORLD);
 
-    // now broadcast the image properties from process #0 to all others:
-    // the 'image_properties' array is only initialized in process #0!
-    // that's why your IDE might show a warning here
-    MPI_Bcast(image_properties, 4, MPI_INT, 0, MPI_COMM_WORLD);
-
-    // now all processes have these properties, initialize the "partial" image in each process
-    cv::Mat part_image_original = cv::Mat(image_properties[1], image_properties[0], image_properties[2]);
-    cv::Mat part_image_hsv = cv::Mat(image_properties[1], image_properties[0], image_properties[2]);
-    cv::Mat part_image_emboss = cv::Mat(image_properties[1], image_properties[0], image_properties[2]);
-    cv::Mat part_image_grayscale = cv::Mat(image_properties[1], image_properties[0], CV_8UC1);
-
-    // wait for all to finish:
-    MPI_Barrier(MPI_COMM_WORLD);
-
-    // now we can cut the full_image into parts and send the parts to each process!
-
-    // first, the number of bytes to send: (Height * Width * Channels)
-    int send_size = image_properties[1] * image_properties[0] * image_properties[3];
-    int send_size_grayscale_image = image_properties[1] * image_properties[0];
-
-    // from process #0 scatter to all others:
-    // the cv::Mat.data is a pointer to the raw image data (B1,G1,R1,B2,G2,R2,.....)
-    MPI_Scatter(full_image_original.data, send_size, MPI_UNSIGNED_CHAR, // unsigned char = unsigned 8-bit (byte)
-                part_image_original.data, send_size, MPI_UNSIGNED_CHAR,
-                0, MPI_COMM_WORLD); // from process #0
-
-    // of course, you can Bcast the image instead of scattering it
-
-    // now all the PROCESSES have their own copy of the 'part_image' image, which contains
-    // a horizontal slice of the image
-    // we can do something with it...
-
-    RgbToHsvEfficientPixelAccess(part_image_original, part_image_hsv);
-    applyEmbossFilterEfficientPixelAccess(part_image_hsv, part_image_emboss);
-    RgbToGrayscaleEfficientPixelAccess(part_image_original, part_image_grayscale);
-
-    // wait for all to finish:
-    MPI_Barrier(MPI_COMM_WORLD);
-
-    // MPI_Gather it back into process #0:
-    MPI_Gather(part_image_emboss.data, send_size, MPI_UNSIGNED_CHAR,
-               full_image_hsv_emboss.data, send_size, MPI_UNSIGNED_CHAR,
-               0, MPI_COMM_WORLD);
-
-    MPI_Gather(part_image_grayscale.data, send_size_grayscale_image, MPI_UNSIGNED_CHAR,
-               full_image_grayscale.data, send_size_grayscale_image, MPI_UNSIGNED_CHAR,
-               0, MPI_COMM_WORLD);
-
-    if (rank == 0)
+    for (int i = 1; i <= 20; i++)
     {
-        double t1 = omp_get_wtime(); // end time
-        std::cout << "Processing took " << (t1 - t0) << " seconds" << std::endl;
-        //std::cout << "Process #0 received the gathered image" << std::endl;
+        double t0 = omp_get_wtime(); // start time
 
-        cv::imshow("hsv emboss image", full_image_hsv_emboss);
-        cv::imshow("grayscale image", full_image_grayscale);
-        cv::imshow("original image", full_image_original);
+        // now broadcast the image properties from process #0 to all others:
+        // the 'image_properties' array is only initialized in process #0!
+        // that's why your IDE might show a warning here
+        MPI_Bcast(image_properties, 4, MPI_INT, 0, MPI_COMM_WORLD);
 
-        cv::waitKey(0); // will need to press a key in EACH process...
-        cv::destroyAllWindows();
+        // now all processes have these properties, initialize the "partial" image in each process
+        cv::Mat part_image_original = cv::Mat(image_properties[1], image_properties[0], image_properties[2]);
+        cv::Mat part_image_hsv = cv::Mat(image_properties[1], image_properties[0], image_properties[2]);
+        cv::Mat part_image_emboss = cv::Mat(image_properties[1], image_properties[0], image_properties[2]);
+        cv::Mat part_image_grayscale = cv::Mat(image_properties[1], image_properties[0], CV_8UC1);
+
+        // wait for all to finish:
+        MPI_Barrier(MPI_COMM_WORLD);
+
+        // now we can cut the full_image into parts and send the parts to each process!
+
+        // first, the number of bytes to send: (Height * Width * Channels)
+        int send_size = image_properties[1] * image_properties[0] * image_properties[3];
+        int send_size_grayscale_image = image_properties[1] * image_properties[0];
+
+        // from process #0 scatter to all others:
+        // the cv::Mat.data is a pointer to the raw image data (B1,G1,R1,B2,G2,R2,.....)
+        MPI_Scatter(full_image_original.data, send_size, MPI_UNSIGNED_CHAR, // unsigned char = unsigned 8-bit (byte)
+                    part_image_original.data, send_size, MPI_UNSIGNED_CHAR,
+                    0, MPI_COMM_WORLD); // from process #0
+
+        // of course, you can Bcast the image instead of scattering it
+
+        // now all the PROCESSES have their own copy of the 'part_image' image, which contains
+        // a horizontal slice of the image
+        // we can do something with it...
+
+        RgbToHsvEfficientPixelAccess(part_image_original, part_image_hsv);
+        applyEmbossFilterEfficientPixelAccess(part_image_hsv, part_image_emboss);
+        RgbToGrayscaleEfficientPixelAccess(part_image_original, part_image_grayscale);
+
+        // wait for all to finish:
+        MPI_Barrier(MPI_COMM_WORLD);
+
+        // MPI_Gather it back into process #0:
+        MPI_Gather(part_image_emboss.data, send_size, MPI_UNSIGNED_CHAR,
+                   full_image_hsv_emboss.data, send_size, MPI_UNSIGNED_CHAR,
+                   0, MPI_COMM_WORLD);
+
+        MPI_Gather(part_image_grayscale.data, send_size_grayscale_image, MPI_UNSIGNED_CHAR,
+                   full_image_grayscale.data, send_size_grayscale_image, MPI_UNSIGNED_CHAR,
+                   0, MPI_COMM_WORLD);
+
+        if (rank == 0)
+        {
+            double t1 = omp_get_wtime(); // end time
+            std::cout << "Processing took " << (t1 - t0) << " seconds" << std::endl;
+            //std::cout << "Process #0 received the gathered image" << std::endl;
+
+            /*   cv::imshow("hsv emboss image", full_image_hsv_emboss);
+            cv::imshow("grayscale image", full_image_grayscale);
+            cv::imshow("original image", full_image_original);
+
+            cv::waitKey(0); // will need to press a key in EACH process...
+            cv::destroyAllWindows();*/
+        }
     }
-
     // finalize MPI
     MPI_Finalize();
 }
