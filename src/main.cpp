@@ -7,6 +7,7 @@
 #include <string>
 
 #include <mpi.h>
+#include <omp.h>
 
 #include "RgbToHsv.hpp"
 #include "EmbossFilter.hpp"
@@ -35,7 +36,7 @@ int main(int argc, char **argv)
     // load the image ONLY in the master process #0:
     if (rank == 0)
     {
-        full_image_original = cv::imread("../lenna.jpg", cv::IMREAD_COLOR);
+        full_image_original = cv::imread(argv[1], cv::IMREAD_COLOR);
 
         // get the properties of the image, to send to other processes later:
         image_properties[0] = full_image_original.cols;        // width
@@ -43,9 +44,12 @@ int main(int argc, char **argv)
         image_properties[2] = full_image_original.type();      // image type (in this case: CV_8UC3)
         image_properties[3] = full_image_original.channels();  // number of channels (here: 3)
 
-        full_image_original.copyTo(full_image_hsv_emboss);
+        //full_image_original.copyTo(full_image_hsv_emboss);
         full_image_grayscale = cv::Mat::zeros(full_image_original.rows, full_image_original.cols, CV_8UC1);
+        full_image_hsv_emboss = cv::Mat::zeros(full_image_original.rows, full_image_original.cols, full_image_original.type());
     }
+
+    double t0 = omp_get_wtime(); // start time
 
     // wait for it to finish:
     MPI_Barrier(MPI_COMM_WORLD);
@@ -100,7 +104,9 @@ int main(int argc, char **argv)
 
     if (rank == 0)
     {
-        std::cout << "Process #0 received the gathered image" << std::endl;
+        double t1 = omp_get_wtime(); // end time
+        std::cout << "Processing took " << (t1 - t0) << " seconds" << std::endl;
+        //std::cout << "Process #0 received the gathered image" << std::endl;
 
         cv::imshow("hsv emboss image", full_image_hsv_emboss);
         cv::imshow("grayscale image", full_image_grayscale);
