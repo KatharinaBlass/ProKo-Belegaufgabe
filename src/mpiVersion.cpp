@@ -7,7 +7,7 @@
 #include "./RgbToHsv.hpp"
 #include "./EmbossFilter.hpp"
 
-int mpiVersion(int argc, char **argv)
+int mpiVersion(int argc, char **argv, bool withOmp)
 {
   int rank, size;
 
@@ -79,9 +79,20 @@ int mpiVersion(int argc, char **argv)
   // a horizontal slice of the image
   // we can do something with it...
 
-  RgbToHsvEfficientPixelAccess(part_image_original, part_image_hsv);
-  applyEmbossFilterEfficientPixelAccess(part_image_hsv, part_image_emboss);
-  RgbToGrayscaleEfficientPixelAccess(part_image_original, part_image_grayscale);
+  if (withOmp)
+  {
+    // MPI and OpenMP version
+    RgbToHsvParallel(part_image_original, part_image_hsv);
+    applyParallelEmbossFilter(part_image_hsv, part_image_emboss);
+    RgbToGrayscaleParallel(part_image_original, part_image_grayscale);
+  }
+  else
+  {
+    // MPI version
+    RgbToHsvEfficientPixelAccess(part_image_original, part_image_hsv);
+    applyEmbossFilterEfficientPixelAccess(part_image_hsv, part_image_emboss);
+    RgbToGrayscaleEfficientPixelAccess(part_image_original, part_image_grayscale);
+  }
 
   // wait for all to finish:
   MPI_Barrier(MPI_COMM_WORLD);

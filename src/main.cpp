@@ -25,9 +25,12 @@ int main(int argc, char **argv)
   }
   else if (strcmp(argv[1], "mpi") == 0)
   {
-    mpiVersion(argc, argv);
+    mpiVersion(argc, argv, false);
   }
-  
+  else if (strcmp(argv[1], "mpiOmp") == 0)
+  {
+    mpiVersion(argc, argv, true);
+  }
   else if (strcmp(argv[1], "cv") == 0)
   {
     cvVersion(argc, argv);
