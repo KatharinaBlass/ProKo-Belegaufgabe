@@ -1,0 +1,1 @@
+int cvVersion(int argc, char **argv);
