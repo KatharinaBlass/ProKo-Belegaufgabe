@@ -15,7 +15,7 @@ uchar convolutePixelEfficient(Mat &inputImage, const Mat &kernel, int I, int J, 
   {
     for (int j = 0; j < kSize; j++)
     {
-      double inputImagePixelValue = static_cast<double>(inputImage.ptr<Vec3b>(I + i - halfSize)[J + j - halfSize][K]);
+      double inputImagePixelValue = static_cast<double>(inputImage.ptr<Vec3b>(I + i - halfSize, J + j - halfSize)->val[K]);
       newPixelValue += inputImagePixelValue * kernel.at<float>(i, j);
     }
   }
@@ -31,17 +31,19 @@ void applyEmbossFilterEfficientPixelAccess(Mat &inputImage, Mat &outputImage)
   // initialize the empty output image:
   outputImage = Mat::zeros(inputImage.size(), inputImage.type());
 
+  Vec3b *outputImagePointer;
+
   // go over the image:
   for (int i = 1; i < inputImage.rows - 1; i++)
   {
-    // We obtain a pointer to the beginning of row i of inputImage and another one for outputImage
-    Vec3b *outputImagePointer = outputImage.ptr<Vec3b>(i);
-
     for (int j = 1; j < inputImage.cols - 1; j++)
     {
+      // We obtain a pointer to the beginning of row i of inputImage and another one for outputImage
+      outputImagePointer = outputImage.ptr<Vec3b>(i, j);
+
       for (int k = 0; k < inputImage.channels(); k++)
       {
-        outputImagePointer[j][k] = convolutePixelEfficient(inputImage, embossKernel, i, j, k);
+        outputImagePointer->val[k] = convolutePixelEfficient(inputImage, embossKernel, i, j, k);
       }
     }
   }
@@ -107,18 +109,20 @@ void applyParallelEmbossFilter(Mat &inputImage, Mat &outputImage)
   // initialize the empty output image:
   outputImage = Mat::zeros(inputImage.size(), inputImage.type());
 
-  // go over the image:
-  #pragma omp parallel for
+  Vec3b *outputImagePointer;
+
+// go over the image:
+#pragma omp parallel for private(outputImagePointer)
   for (int i = 1; i < inputImage.rows - 1; i++)
   {
-    // We obtain a pointer to the beginning of row i of inputImage and another one for outputImage
-    Vec3b *outputImagePointer = outputImage.ptr<Vec3b>(i);
-
     for (int j = 1; j < inputImage.cols - 1; j++)
     {
+      // We obtain a pointer to the beginning of row i of inputImage and another one for outputImage
+      outputImagePointer = outputImage.ptr<Vec3b>(i, j);
+
       for (int k = 0; k < inputImage.channels(); k++)
       {
-        outputImagePointer[j][k] = convolutePixelEfficient(inputImage, embossKernel, i, j, k);
+        outputImagePointer->val[k] = convolutePixelEfficient(inputImage, embossKernel, i, j, k);
       }
     }
   }

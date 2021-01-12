@@ -10,14 +10,18 @@ int main(int argc, char **argv)
 {
   if (argc < 3)
   {
-    std::cerr << "Usage: " << argv[0] << " OPTION (f.e. mpi, omp, mpiOmp, cv, normal) "
+    std::cerr << "Usage: " << argv[0] << " OPTION (f.e. mpi, omp, mpiOmp, cv, normalSlow, normalFast) "
               << " IMAGE_PATH" << std::endl;
     return 1;
   }
 
-  if (strcmp(argv[1], "normal") == 0)
+  if (strcmp(argv[1], "normalSlow") == 0)
   {
-    normalVersion(argc, argv);
+    normalVersion(argc, argv, true);
+  }
+  else if (strcmp(argv[1], "normalFast") == 0)
+  {
+    normalVersion(argc, argv, false);
   }
   else if (strcmp(argv[1], "omp") == 0)
   {

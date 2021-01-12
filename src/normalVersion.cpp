@@ -3,7 +3,6 @@
 #include <opencv2/opencv.hpp>
 #include <omp.h>
 
-
 #include "./RgbToGrayscale.hpp"
 #include "./RgbToHsv.hpp"
 #include "./EmbossFilter.hpp"
@@ -12,7 +11,7 @@ using namespace cv;
 using namespace std;
 
 // without any parallelization
-int normalVersion(int argc, char **argv)
+int normalVersion(int argc, char **argv, bool slow = false)
 {
     Mat image = imread(argv[2], IMREAD_COLOR);
 
@@ -28,12 +27,21 @@ int normalVersion(int argc, char **argv)
 
     double t0 = omp_get_wtime(); // start time
 
-    RgbToHsvEfficientPixelAccess(image, hsv_image);
-    applyEmbossFilterEfficientPixelAccess(hsv_image, hsv_emboss_image);
-    RgbToGrayscaleEfficientPixelAccess(image, gray_image);
+    if (slow)
+    {
+        RgbToHsvSlowPixelAccess(image, hsv_image);
+        applyEmbossFilterSlowPixelAccess(image, hsv_emboss_image);
+        RgbToGrayscaleSlowPixelAccess(image, gray_image);
+    }
+    else
+    {
+        RgbToHsvEfficientPixelAccess(image, hsv_image);
+        applyEmbossFilterEfficientPixelAccess(image, hsv_emboss_image);
+        RgbToGrayscaleEfficientPixelAccess(image, gray_image);
+    }
 
     double t1 = omp_get_wtime(); // end time
-    std::cout << "Image Conversion took " << (t1 - t0) << " seconds" << std::endl;
+    std::cout << "Image Conversion took " << (t1 - t0) * 1000 << " milliseconds" << std::endl;
 
     // save images as png files
     cv::imwrite("image_grayscale.png", gray_image);

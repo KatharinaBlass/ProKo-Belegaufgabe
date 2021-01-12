@@ -34,7 +34,7 @@ int cvVersion(int argc, char **argv)
     cvtColor(image, cv_grayscale_image, COLOR_RGB2GRAY);
 
     double t1 = omp_get_wtime(); // end time
-    std::cout << "Image Conversion took " << (t1 - t0) << " seconds" << std::endl;
+    std::cout << "Image Conversion took " << (t1 - t0)*1000 << " milliseconds" << std::endl;
 
     // save images as png files
     cv::imwrite("image_grayscale.png", cv_grayscale_image);

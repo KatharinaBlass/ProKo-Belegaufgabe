@@ -1,1 +1,1 @@
-int normalVersion(int argc, char **argv);
+int normalVersion(int argc, char **argv, bool slow = false);

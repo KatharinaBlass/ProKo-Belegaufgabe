@@ -23,24 +23,27 @@ void RgbToGrayscaleEfficientPixelAccess(Mat &inputImage, Mat &outputImage)
 
   int grayPixelValue;
 
+  Vec3b *inputImagePointer;
+  uchar *outputImagePointer;
+
   for (int i = 0; i < inputImage.rows; i++)
   {
-    // We obtain a pointer to the beginning of row i of inputImage and another one for outputImage
-    Vec3b *inputImagePointer = inputImage.ptr<Vec3b>(i);
-    uchar *outputImagePointer = outputImage.ptr<uchar>(i);
-
     for (int j = 0; j < inputImage.cols; j++)
     {
+      // We obtain a pointer to the beginning of row i of inputImage and another one for outputImage
+      inputImagePointer = inputImage.ptr<Vec3b>(i, j);
+      outputImagePointer = outputImage.ptr<uchar>(i, j);
+
       // get R, G and B values:
-      double R = static_cast<double>(inputImagePointer[j][2]);
-      double G = static_cast<double>(inputImagePointer[j][1]);
-      double B = static_cast<double>(inputImagePointer[j][0]);
+      double R = static_cast<double>(inputImagePointer->val[2]);
+      double G = static_cast<double>(inputImagePointer->val[1]);
+      double B = static_cast<double>(inputImagePointer->val[0]);
 
       // calculate grayPixelValue:
       grayPixelValue = 0.21 * R + 0.72 * G + 0.07 * B;
 
       // set grayPixelValue to outputImagePointer:
-      outputImagePointer[j] = grayPixelValue;
+      *outputImagePointer = grayPixelValue;
     }
   }
 }
@@ -105,25 +108,29 @@ void RgbToGrayscaleParallel(Mat &inputImage, Mat &outputImage)
 
   int grayPixelValue;
 
-#pragma omp parallel for
+  Vec3b *inputImagePointer;
+  uchar *outputImagePointer;
+
+// use private(variableX) to ensure each thread will has it's own variableX, else it would result in interference between the thread
+#pragma omp parallel for private(inputImagePointer, outputImagePointer, grayPixelValue)
   for (int i = 0; i < inputImage.rows; i++)
   {
-    // We obtain a pointer to the beginning of row i of inputImage and another one for outputImage
-    Vec3b *inputImagePointer = inputImage.ptr<Vec3b>(i);
-    uchar *outputImagePointer = outputImage.ptr<uchar>(i);
-
     for (int j = 0; j < inputImage.cols; j++)
     {
+      // We obtain a pointer to the beginning of row i of inputImage and another one for outputImage
+      inputImagePointer = inputImage.ptr<Vec3b>(i, j);
+      outputImagePointer = outputImage.ptr<uchar>(i, j);
+
       // get R, G and B values:
-      double R = static_cast<double>(inputImagePointer[j][2]);
-      double G = static_cast<double>(inputImagePointer[j][1]);
-      double B = static_cast<double>(inputImagePointer[j][0]);
+      double R = static_cast<double>(inputImagePointer->val[2]);
+      double G = static_cast<double>(inputImagePointer->val[1]);
+      double B = static_cast<double>(inputImagePointer->val[0]);
 
       // calculate grayPixelValue:
       grayPixelValue = 0.21 * R + 0.72 * G + 0.07 * B;
 
       // set grayPixelValue to outputImagePointer:
-      outputImagePointer[j] = grayPixelValue;
+      *outputImagePointer = grayPixelValue;
     }
   }
 }
