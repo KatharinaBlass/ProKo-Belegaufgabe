@@ -31,7 +31,7 @@ int ompVersion(int argc, char **argv)
     RgbToGrayscaleParallel(image, gray_image);
 
     double t1 = omp_get_wtime(); // end time
-    std::cout << "Image Conversion took " << (t1 - t0)*1000 << " milliseconds" << std::endl;
+    std::cout << "Image Conversion took " << (t1 - t0) * 1000 << " milliseconds" << std::endl;
 
     // save images as png files
     cv::imwrite("image_grayscale.png", gray_image);

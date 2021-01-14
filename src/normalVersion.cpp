@@ -30,13 +30,13 @@ int normalVersion(int argc, char **argv, bool slow = false)
     if (slow)
     {
         RgbToHsvSlowPixelAccess(image, hsv_image);
-        applyEmbossFilterSlowPixelAccess(image, hsv_emboss_image);
+        applyEmbossFilterSlowPixelAccess(hsv_image, hsv_emboss_image);
         RgbToGrayscaleSlowPixelAccess(image, gray_image);
     }
     else
     {
         RgbToHsvEfficientPixelAccess(image, hsv_image);
-        applyEmbossFilterEfficientPixelAccess(image, hsv_emboss_image);
+        applyEmbossFilterEfficientPixelAccess(hsv_image, hsv_emboss_image);
         RgbToGrayscaleEfficientPixelAccess(image, gray_image);
     }
 

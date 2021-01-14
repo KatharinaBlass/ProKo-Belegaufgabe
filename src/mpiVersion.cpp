@@ -109,7 +109,7 @@ int mpiVersion(int argc, char **argv, bool withOmp)
   if (rank == 0)
   {
     double end = MPI_Wtime();
-    std::cout << "Image Conversion took " << (end - start)*1000 << " milliseconds" << std::endl;
+    std::cout << "Image Conversion took " << (end - start) * 1000 << " milliseconds" << std::endl;
 
     // save images as png files
     cv::imwrite("image_grayscale.png", full_image_grayscale);
