@@ -6,7 +6,7 @@
 using namespace cv;
 using namespace std;
 
-int cvVersion(int argc, char **argv)
+int VersionOpenCV(int argc, char **argv)
 {
   Mat image = imread(argv[2], IMREAD_COLOR);
 

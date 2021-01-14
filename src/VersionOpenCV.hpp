@@ -1,0 +1,1 @@
+int VersionOpenCV(int argc, char **argv);

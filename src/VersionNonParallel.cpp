@@ -10,7 +10,8 @@
 using namespace cv;
 using namespace std;
 
-int ompVersion(int argc, char **argv)
+// without any parallelization
+int VersionNonParallel(int argc, char **argv, bool slow = false)
 {
     Mat image = imread(argv[2], IMREAD_COLOR);
 
@@ -26,9 +27,18 @@ int ompVersion(int argc, char **argv)
 
     double t0 = omp_get_wtime(); // start time
 
-    RgbToHsvParallel(image, hsv_image);
-    applyParallelEmbossFilter(hsv_image, hsv_emboss_image);
-    RgbToGrayscaleParallel(image, gray_image);
+    if (slow)
+    {
+        RgbToHsvSlowPixelAccess(image, hsv_image);
+        applyEmbossFilterSlowPixelAccess(hsv_image, hsv_emboss_image);
+        RgbToGrayscaleSlowPixelAccess(image, gray_image);
+    }
+    else
+    {
+        RgbToHsvEfficientPixelAccess(image, hsv_image);
+        applyEmbossFilterEfficientPixelAccess(hsv_image, hsv_emboss_image);
+        RgbToGrayscaleEfficientPixelAccess(image, gray_image);
+    }
 
     double t1 = omp_get_wtime(); // end time
     std::cout << "Image Conversion took " << (t1 - t0) * 1000 << " milliseconds" << std::endl;

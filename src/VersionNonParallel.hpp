@@ -1,0 +1,1 @@
+int VersionNonParallel(int argc, char **argv, bool slow = false);

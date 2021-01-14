@@ -7,7 +7,7 @@
 #include "./RgbToHsv.hpp"
 #include "./EmbossFilter.hpp"
 
-int mpiVersion(int argc, char **argv, bool withOmp)
+int VersionMPI(int argc, char **argv, bool withOmp)
 {
   int rank, size;
 
