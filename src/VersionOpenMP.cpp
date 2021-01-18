@@ -1,5 +1,3 @@
-#include <iostream>
-#include <string>
 #include <opencv2/opencv.hpp>
 #include <omp.h>
 
@@ -12,6 +10,7 @@ using namespace std;
 
 int VersionOpenMP(int argc, char **argv)
 {
+    // read the image
     Mat image = imread(argv[2], IMREAD_COLOR);
 
     if (!image.data)
@@ -24,18 +23,21 @@ int VersionOpenMP(int argc, char **argv)
     Mat hsv_emboss_image;
     Mat gray_image;
 
-    double t0 = omp_get_wtime(); // start time
+    // start time
+    double t0 = omp_get_wtime();
 
+    // use OpenMP-parallelized conversion functions
     RgbToHsvParallel(image, hsv_image);
     applyParallelEmbossFilter(hsv_image, hsv_emboss_image);
     RgbToGrayscaleParallel(image, gray_image);
 
-    double t1 = omp_get_wtime(); // end time
-    std::cout << "Image Conversion took " << (t1 - t0) * 1000 << " milliseconds" << std::endl;
+    // end time
+    double t1 = omp_get_wtime();
+    cout << "Image Conversion took " << (t1 - t0) * 1000 << " milliseconds" << endl;
 
     // save images as png files
-    cv::imwrite("image_grayscale.png", gray_image);
-    cv::imwrite("image_hsv_emboss.png", hsv_emboss_image);
+    imwrite("image_grayscale.png", gray_image);
+    imwrite("image_hsv_emboss.png", hsv_emboss_image);
 
     // display images and wait for a key-press, then close the window
     imshow("Original image", image);

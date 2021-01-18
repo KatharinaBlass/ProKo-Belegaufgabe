@@ -1,6 +1,6 @@
 # Belegaufgabe
 ## Setup
-This project is implemented in C++ with the library `OpenCV` for image processing and the libraries `OpenMP` and `Microsoft MPI` for parallelization. Since it come along with a cmakelist, feel free to use cmake to configure the projekt for your preferred IDE e.g. Visual Studio. The following instructions will guide you to setup this project as I did, using VSCode with the needed C++ and Cmake extensions, a suitable compiler and whatever needed to include openCV, openMP and MPI as external libraries.
+This project is implemented in C++ with the library `OpenCV` for image processing and the libraries `OpenMP` and `Microsoft MPI` for parallelization. Since it comes along with a CMakeList, feel free to use cmake to configure the projekt for your preferred IDE e.g. Visual Studio. The following instructions will guide you to setup this project using VSCode with the needed C++ and Cmake extensions, a suitable compiler and whatever needed to include openCV, openMP and MPI as external libraries.
 
 First of all clone this repository!
 
@@ -41,6 +41,29 @@ After that we need to adjust our path again:
    1. The path to the bin-folder, inside where you have installed Microsoft MPI. For me this is: `C:\Program Files\Microsoft MPI\Bin` (note: this should be identical to the environment variable MSMPI_BIN and therefore maybe can be ignored, try out if you want)
 
 You're done! Keep sure to restart your VSCode after applying changes to your path.
-Now you should be able to build and run the project as described in the linked guide above.
+Now you should be able to build and run the project.
+
+## Run the build
+After building the project with cmake you need to open a terminal in the build-folder. Run one of the following commands for the desired Implementation:
+
+```c++
+// non-parallel Version, slowPixelAccess
+./Belegaufgabe.exe npSlow ..\platypus.png
+
+// non-parallel Version, fastPixelAccess
+./Belegaufgabe.exe npFast ..\platypus.png
+
+// OpenMP parallel Version
+./Belegaufgabe.exe omp ..\platypus.png
+
+// OpenCV Version
+./Belegaufgabe.exe cv ..\platypus.png
+
+// MPI parallel Version
+mpiexec.exe ./Belegaufgabe.exe mpi ..\platypus.png
+
+// MPI & OpenMP parallel Version
+mpiexec.exe ./Belegaufgabe.exe mpiOmp ..\platypus.png
+```
 
 <b> Have fun! </b>

@@ -1,5 +1,3 @@
-#include <iostream>
-#include <string>
 #include <opencv2/opencv.hpp>
 #include <omp.h>
 
@@ -8,6 +6,7 @@ using namespace std;
 
 int VersionOpenCV(int argc, char **argv)
 {
+  // read the image
   Mat image = imread(argv[2], IMREAD_COLOR);
 
   if (!image.data)
@@ -20,7 +19,8 @@ int VersionOpenCV(int argc, char **argv)
   Mat cv_hsv_emboss_image;
   Mat cv_grayscale_image;
 
-  double t0 = omp_get_wtime(); // start time
+  // start time
+  double t0 = omp_get_wtime();
 
   // OpenCv hsv conversion
   cvtColor(image, cv_hsv_image, COLOR_RGB2HSV);
@@ -33,12 +33,13 @@ int VersionOpenCV(int argc, char **argv)
   // OpenCV grayscale
   cvtColor(image, cv_grayscale_image, COLOR_RGB2GRAY);
 
-  double t1 = omp_get_wtime(); // end time
-  std::cout << "Image Conversion took " << (t1 - t0) << " seconds" << std::endl;
+  // end time
+  double t1 = omp_get_wtime();
+  cout << "Image Conversion took " << (t1 - t0) << " seconds" << endl;
 
   // save images as png files
-  cv::imwrite("image_grayscale.png", cv_grayscale_image);
-  cv::imwrite("image_hsv_emboss.png", cv_hsv_emboss_image);
+  imwrite("image_grayscale.png", cv_grayscale_image);
+  imwrite("image_hsv_emboss.png", cv_hsv_emboss_image);
 
   // display images and wait for a key-press, then close the window
   imshow("Original image", image);

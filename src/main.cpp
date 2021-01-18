@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string.h>
-#include <stdio.h>
 #include "./VersionMPI.hpp"
 #include "./VersionOpenCV.hpp"
 #include "./VersionOpenMP.hpp"
