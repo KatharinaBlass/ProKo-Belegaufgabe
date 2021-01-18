@@ -31,7 +31,7 @@ int VersionOpenCV(int argc, char **argv)
   filter2D(cv_hsv_image, cv_hsv_emboss_image, -1, embossKernel, Point(-1, -1), 0, BORDER_DEFAULT);
 
   // OpenCV grayscale
-  cvtColor(image, cv_grayscale_image, COLOR_RGB2GRAY);
+  cvtColor(image, cv_grayscale_image, COLOR_BGR2GRAY);
 
   // end time
   double t1 = omp_get_wtime();
