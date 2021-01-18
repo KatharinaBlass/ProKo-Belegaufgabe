@@ -23,7 +23,7 @@ int VersionOpenCV(int argc, char **argv)
   double t0 = omp_get_wtime();
 
   // OpenCv hsv conversion
-  cvtColor(image, cv_hsv_image, COLOR_RGB2HSV);
+  cvtColor(image, cv_hsv_image, COLOR_BGR2HSV);
 
   // OpenCV emboss filter
   float emboss_data[9] = {2, -0, 0, 0, -1, 0, 0, 0, -1};
